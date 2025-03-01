@@ -4,6 +4,7 @@
 
 **Project Title**: Layoffs Data Analysis  
 **Database**: `layoffs_db` 
+
 **Data Link**:https://www.kaggle.com/datasets/swaptr/layoffs-2022
 
 This project analyzes **layoff trends** across different companies, industries, and countries using SQL. The dataset provides insights into the scale and timing of layoffs, helping identify key patterns.
