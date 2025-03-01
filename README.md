@@ -1,100 +1,151 @@
-# Data Cleaning SQL Project
+# Layoffs Data Analysis SQL Project
 
 ## Project Overview
 
-**Project Title**: Data Cleaning in SQL\
-**Date**: 2025-02-16\
-**Database**: `data_cleaning_db`
+**Project Title**: Layoffs Data Analysis  
+**Database**: `layoffs_db`  
 
-This project demonstrates SQL skills used for **data cleaning**, ensuring data integrity, consistency, and accuracy. It involves handling missing values, removing duplicates, standardizing formats, and correcting incorrect data entries.
+This project analyzes **layoff trends** across different companies, industries, and countries using SQL. The dataset provides insights into the scale and timing of layoffs, helping identify key patterns.
 
 ---
 
 ## Objectives
 
-1. **Set up a database and import raw data**
-2. **Handle missing values**
-3. **Remove duplicate records**
-4. **Standardize data formats**
-5. **Correct inaccurate data**
+1. **Explore layoffs data** to identify trends across industries and countries.  
+2. **Analyze company-wise and industry-wise layoffs** to determine the most affected sectors.  
+3. **Examine yearly and monthly trends** to observe layoff peaks.  
+4. **Use SQL for data aggregation and reporting** to derive meaningful insights.  
 
 ---
 
 ## Project Structure
 
-### **1. Database Setup**
+### **1. Data Exploration**
 
+#### **View Full Dataset**
 ```sql
-CREATE DATABASE IF NOT EXISTS data_cleaning_db;
-USE data_cleaning_db;
+SELECT * FROM layoffs_stagging2;
+```
+
+#### **Find Maximum Layoffs and Percentage Laid Off**
+```sql
+SELECT MAX(total_laid_off), MAX(percentage_laid_off)
+FROM layoffs_stagging2;
+```
+
+#### **Companies with 100% Layoffs (Shutdowns)**
+```sql
+SELECT * FROM layoffs_stagging2
+WHERE percentage_laid_off = 1
+ORDER BY total_laid_off DESC;
+```
+
+#### **Total Layoffs by Company**
+```sql
+SELECT company, SUM(total_laid_off)
+FROM layoffs_stagging2
+GROUP BY company
+ORDER BY 2 DESC;
+```
+
+#### **Date Range of Layoffs Data**
+```sql
+SELECT MIN(date), MAX(date)
+FROM layoffs_stagging2;
 ```
 
 ---
 
-### **2. Data Cleaning Steps**
+### **2. Industry & Country-Level Analysis**
 
-#### **Check for Missing Values**
-
+#### **Total Layoffs by Industry**
 ```sql
-SELECT * FROM table_name
-WHERE column1 IS NULL OR column2 IS NULL OR column3 IS NULL;
+SELECT industry, SUM(total_laid_off)
+FROM layoffs_stagging2
+GROUP BY industry
+ORDER BY 2 DESC;
 ```
 
-#### **Remove Duplicate Records**
-
+#### **Total Layoffs by Country**
 ```sql
-DELETE FROM table_name
-WHERE id NOT IN (
-    SELECT MIN(id) FROM table_name GROUP BY column1, column2, column3
-);
+SELECT country, SUM(total_laid_off)
+FROM layoffs_stagging2
+GROUP BY country
+ORDER BY 2 DESC;
 ```
 
-#### **Standardize Text Formats**
+---
 
+### **3. Yearly & Monthly Trends**
+
+#### **Total Layoffs Per Year**
 ```sql
-UPDATE table_name
-SET column_name = TRIM(LOWER(column_name));
+SELECT YEAR(date), SUM(total_laid_off)
+FROM layoffs_stagging2
+GROUP BY YEAR(date)
+ORDER BY 2 DESC;
 ```
 
-#### **Correct Inaccurate Data Entries**
-
+#### **Layoffs by Business Stage**
 ```sql
-UPDATE table_name
-SET column_name = 'Correct Value'
-WHERE column_name = 'Incorrect Value';
+SELECT stage, SUM(total_laid_off)
+FROM layoffs_stagging2
+GROUP BY stage
+ORDER BY 2 DESC;
 ```
 
-#### **Check for Outliers in Numeric Data**
-
+#### **Monthly Layoff Trends**
 ```sql
-SELECT * FROM table_name
-WHERE column_name > (SELECT AVG(column_name) + 3 * STDDEV(column_name) FROM table_name);
+SELECT SUBSTR(date,1,7) AS month, SUM(total_laid_off)
+FROM layoffs_stagging2
+WHERE SUBSTR(date,1,7) IS NOT NULL
+GROUP BY SUBSTR(date,1,7)
+ORDER BY 1 ASC;
+```
+
+---
+
+### **4. Rolling Total Analysis**
+
+#### **Cumulative Layoffs Over Time**
+```sql
+WITH rolling_total AS (
+    SELECT SUBSTR(date,1,7) AS month,
+           SUM(total_laid_off) OVER (ORDER BY SUBSTR(date,1,7) ASC) AS cumulative_layoffs
+    FROM layoffs_stagging2
+    WHERE SUBSTR(date,1,7) IS NOT NULL
+)
+SELECT * FROM rolling_total;
 ```
 
 ---
 
 ## **Findings & Insights**
 
-- Identified and handled missing values.
-- Removed duplicate records to ensure data consistency.
-- Standardized text formats for uniformity.
-- Fixed incorrect data entries.
-- Checked for outliers to improve data accuracy.
+- Certain **industries and companies** were more affected than others.
+- Layoffs **peaked in specific years and months**, indicating economic downturns.
+- Some companies had **100% layoffs**, signaling shutdowns.
+- The rolling total analysis shows **cumulative layoffs trends** over time.
 
 ---
 
 ## **How to Use This Project**
 
 1. **Clone the Repository**: If this is on GitHub, clone or download the SQL file.
-2. **Set Up the Database**: Run the database setup queries.
-3. **Import Data**: Load your dataset into the respective table.
-4. **Run Cleaning Queries**: Execute the provided SQL queries to clean and standardize the data.
+2. **Set Up the Database**: Run the queries using your SQL environment.
+3. **Import Data**: Load the layoff dataset into `layoffs_stagging2`.
+4. **Run Queries**: Execute the provided SQL queries to analyze layoffs trends.
 
 ---
 
 ## **Author & Portfolio**
 
-This project is part of my portfolio to demonstrate SQL data cleaning skills. If you have questions or feedback, feel free to connect with me!
+This project is part of my portfolio to demonstrate SQL skills in data analysis. If you have questions or feedback, feel free to connect with me!
+
+### 📌 Stay Connected:
+- **LinkedIn**: [www.linkedin.com/in/joshua-n-a28005216e](#)
+- **Email**: [joshuajos999@gmail.com](#)
 
 🚀 **Thank you for exploring my SQL project!** 🚀
+
 
